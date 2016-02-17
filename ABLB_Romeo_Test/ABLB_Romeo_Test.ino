@@ -70,14 +70,14 @@ void rev(byte a,byte b)       // Reverse
   analogWrite (Rspeed,b);    
   digitalWrite(Rdir,LOW);
 }  
-void spinR(byte a, byte b);
+void spinR(byte a, byte b)
 {
   analogWrite (Lspeed,a);
   digitalWrite(Ldir,HIGH);    // L fwd, R rev to spin R (clockwise)
   analogWrite (Rspeed,b);    
   digitalWrite(Rdir,LOW);
 }  
-void spinL(byte a, byte b);
+void spinL(byte a, byte b)
 {
   analogWrite (Lspeed,a);
   digitalWrite(Ldir,LOW);    // R fwd, L rev to spin L (counterclockwise)
