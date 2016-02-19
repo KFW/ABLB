@@ -59,28 +59,28 @@ void halt(void)               // Stop
 void fwd(byte a,byte b)       // Move forward
 {
   analogWrite (Lspeed,a);     // PWM Speed Control
-  digitalWrite(Ldir,HIGH);    // HIGH for fwd
+  digitalWrite(Ldir,LOW);    // HIGH for fwd
   analogWrite (Rspeed,b);    
-  digitalWrite(Rdir,HIGH);
+  digitalWrite(Rdir,LOW);
 }  
 void rev(byte a,byte b)       // Reverse
 {
   analogWrite (Lspeed,a);
-  digitalWrite(Ldir,LOW);   
+  digitalWrite(Ldir,HIGH);   
   analogWrite (Rspeed,b);    
-  digitalWrite(Rdir,LOW);
+  digitalWrite(Rdir,HIGH);
 }  
 void spinR(byte a, byte b)
 {
   analogWrite (Lspeed,a);
-  digitalWrite(Ldir,HIGH);    // L fwd, R rev to spin R (clockwise)
+  digitalWrite(Ldir,LOW);    // L fwd, R rev to spin R (clockwise)
   analogWrite (Rspeed,b);    
-  digitalWrite(Rdir,LOW);
+  digitalWrite(Rdir,HIGH);
 }  
 void spinL(byte a, byte b)
 {
   analogWrite (Lspeed,a);
-  digitalWrite(Ldir,LOW);    // R fwd, L rev to spin L (counterclockwise)
+  digitalWrite(Ldir,HIGH);    // R fwd, L rev to spin L (counterclockwise)
   analogWrite (Rspeed,b);    
-  digitalWrite(Rdir,HIGH);
+  digitalWrite(Rdir,LOW);
 }  
