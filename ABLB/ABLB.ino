@@ -23,6 +23,10 @@ SensorBar mySensorBar( 0x3E ); // default address
 
 const int ButtonPin = 0;
 int buttonVal = 0;
+boolean goFlag = false;
+int position = 0;
+int lastPosition = 0;
+int error = 0;
 
 
 
@@ -63,33 +67,37 @@ void setup() {
 }
 
 void loop() {
-{
+
   buttonVal = analogRead(ButtonPin);
   
   if (buttonVal < 30){       // button 1
-    halt();                  
-  }
-  else if (buttonVal < 175){ // button 2 
-    fwd(128,128);            // motors fwd 1/2
-    delay(1500);             // go for 1.5 seconds
-    spinL(128,128);
-    delay(400);
-    fwd(128,128);
-    delay(1500);
     halt();
+    goFlag = false;
+  }
+  /*
+  else if (buttonVal < 175){ // button 2 
+    // for initialization routine if needed	
   }
   else if (buttonVal < 360){  // button 3 
-    // for later
+    // for future use
   }
   else if (buttonVal < 540){  // button 4
-    // for later
+    // for future use
   }
+  */
   else if (buttonVal < 800){  // button 5
-    // for later
+    goFlag = true;
   }
-}
+  
+  if (goFlag) {
+    position = mySensorBar.getPosition();
+    error = position - lastPosition;
+    lastPosition = position;
+  	
+  }
 
-}
+
+} // end loop()
 
 void halt(void)               // Stop
 {
