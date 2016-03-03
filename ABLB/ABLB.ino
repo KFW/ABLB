@@ -1,22 +1,64 @@
-/* ABLB_Romeo_Test
+/* ABLB
  * ActoBitty Line Bot 
+ *
+ * base robot Actobotics ActoBitty:
+ * https://www.servocity.com/html/actobitty_2_wheel_robot_kit.html#.VthCuvkrI-U
  * 
+ * microcontroller board DFRobot Romeo 2 (has built in motor controller):
  * http://www.dfrobot.com/wiki/index.php/Romeo_V2-All_in_one_Controller_(R3)_(SKU:DFR0225)
+ *
+ * mount panel for board:
+ * http://www.thingiverse.com/thing:1377159
+ * 
+ * line follower array from Sparkfun:
+ * https://github.com/sparkfun/Line_Follower_Array
  *  
  */
+
+
+#include "Wire.h"              // for I2C
+#include "sensorbar.h"         // needs SparkFun library
+
+SensorBar mySensorBar( 0x3E ); // default address
 
 const int ButtonPin = 0;
 int buttonVal = 0;
 
+
+
 // Romeo standard pins
-int Lspeed = 5;    // M1 Speed Control
-int Rspeed = 6;    // M2 Speed Control
-int Ldir = 4;    // M1 Direction Control
-int Rdir = 7;    // M1 Direction Control
+int Lspeed = 5;                // M1 Speed Control
+int Rspeed = 6;                // M2 Speed Control
+int Ldir = 4;                  // M1 Direction Control
+int Rdir = 7;                  // M1 Direction Control
  
 
 void setup() {
-  // put your setup code here, to run once:
+ //Default: the IR will only be turned on during reads.
+  mySensorBar.setBarStrobe();
+  //Other option: Command to run all the time
+  //mySensorBar.clearBarStrobe();
+
+  //Default: dark on light
+  mySensorBar.clearInvertBits();
+  //Other option: light line on dark
+  //mySensorBar.setInvertBits();
+  
+  //Don't forget to call .begin() to get the bar ready.  This configures HW.
+  uint8_t returnStatus = mySensorBar.begin();
+ /*
+  if(returnStatus)
+  {
+	  Serial.println("sx1509 IC communication OK");
+  }
+  else
+  {
+	  Serial.println("sx1509 IC communication FAILED!");
+  }
+  Serial.println();
+  */
+  
+}
 
 }
 
