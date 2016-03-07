@@ -8,8 +8,6 @@
  *  
  */
 
-#include "Wire.h"              // for I2C
-#include "sensorbar.h"         // needs SparkFun library
 
 const int ButtonPin = 0;
 int buttonVal = 0;
@@ -20,14 +18,7 @@ int Rspeed = 6;    // M2 Speed Control
 int Ldir = 4;    // M1 Direction Control
 int Rdir = 7;    // M1 Direction Control
 
-// Uncomment one of the four lines to match your SX1509's address
-//  pin selects. SX1509 breakout defaults to [0:0] (0x3E).
-const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
-//const byte SX1509_ADDRESS = 0x3F;  // SX1509 I2C address (01)
-//const byte SX1509_ADDRESS = 0x70;  // SX1509 I2C address (10)
-//const byte SX1509_ADDRESS = 0x71;  // SX1509 I2C address (11)
 
-SensorBar mySensorBar(SX1509_ADDRESS);
 
 void setup() {
   // put your setup code here, to run once:

@@ -31,15 +31,15 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 const int ButtonPin = 0;
 int buttonVal = 0;
 boolean goFlag = false;
-int position = 0;
+int currentPosition = 0;
 int lastPosition = 0;
 int error = 0;
 
 
 
 // Romeo standard pins
-int Lspeed = 5;                // M1 Speed Control
-int Rspeed = 6;                // M2 Speed Control
+int Lmotor = 5;                // M1 Speed Control
+int Rmotor = 6;                // M2 Speed Control
 int Ldir = 4;                  // M1 Direction Control
 int Rdir = 7;                  // M1 Direction Control
  
@@ -97,9 +97,9 @@ void loop() {
   }
   
   if (goFlag) {
-    position = mySensorBar.getPosition();
-    error = position - lastPosition;
-    lastPosition = position;
+    currentPosition = mySensorBar.getPosition();
+    error = currentPosition - lastPosition;
+    lastPosition = currentPosition;
   	
   }
 
@@ -108,34 +108,34 @@ void loop() {
 
 void halt(void)               // Stop
 {
-  digitalWrite(Lspeed,LOW);   
-  digitalWrite(Rspeed,LOW);      
+  digitalWrite(Lmotor,LOW);   
+  digitalWrite(Rmotor,LOW);      
 }   
 void fwd(byte a,byte b)       // Move forward
 {
-  analogWrite (Lspeed,a);     // PWM Speed Control
-  digitalWrite(Ldir,LOW);    // LOW for fwd
-  analogWrite (Rspeed,b);    
+  analogWrite (Lmotor,a);     // PWM Speed Control
+  digitalWrite(Ldir,LOW);     // LOW for fwd
+  analogWrite (Rmotor,b);    
   digitalWrite(Rdir,LOW);
 }  
 void rev(byte a,byte b)       // Reverse
 {
-  analogWrite (Lspeed,a);
+  analogWrite (Lmotor,a);
   digitalWrite(Ldir,HIGH);   
-  analogWrite (Rspeed,b);    
+  analogWrite (Rmotor,b);    
   digitalWrite(Rdir,HIGH);
 }  
 void spinR(byte a, byte b)
 {
-  analogWrite (Lspeed,a);
+  analogWrite (Lmotor,a);
   digitalWrite(Ldir,LOW);    // L fwd, R rev to spin R (clockwise)
-  analogWrite (Rspeed,b);    
+  analogWrite (Rmotor,b);    
   digitalWrite(Rdir,HIGH);
 }  
 void spinL(byte a, byte b)
 {
-  analogWrite (Lspeed,a);
+  analogWrite (Lmotor,a);
   digitalWrite(Ldir,HIGH);    // R fwd, L rev to spin L (counterclockwise)
-  analogWrite (Rspeed,b);    
+  analogWrite (Rmotor,b);    
   digitalWrite(Rdir,LOW);
 }  
