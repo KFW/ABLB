@@ -12,6 +12,7 @@
  * 
  * line follower array from Sparkfun:
  * https://github.com/sparkfun/Line_Follower_Array
+ * https://learn.sparkfun.com/tutorials/sparkfun-line-follower-array-hookup-guide
  * position provided ranges from -127 (far L) to 127 (far R)
  * 
  * PID quick tutorial
@@ -32,15 +33,22 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 0.5
-const float Kd = 
+// will try to avoid floating point math
+const byte Kp = 1
+const byte Kd = 2
+
+const byte MAXSPEED = 128; // slow things down for testing purposes
+int Lspeed = MAXSPEED;     // int since may exceed 255 in calculations, but will ultimately be constrained
+int Rspeed = MAXSPEED;
+
+
 
 const int ButtonPin = 0;
 int buttonVal = 0;
 boolean goFlag = false;
-int currentPosition = 0;
-int lastPosition = 0;
 int error = 0;
+int lastError = 0;
+
 
 // Romeo standard pins
 int Lmotor = 5;                // M1 Speed Control
@@ -102,47 +110,66 @@ void loop() {
   }
   
   if (goFlag) {
-    currentPosition = mySensorBar.getPosition();
-    error = currentPosition - lastPosition;
-    lastPosition = currentPosition;	
-  }
+    error = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
 
+    // want to be as fast as possible, so will just slow down necessary wheel for correction
+    // rather than trying to speed up one and slow the other
+    if (error < 0){           // robot has drifted right; slow down L wheel
+      Rspeed = MAXSPEED;
+      Lspeed = MAXSPEED + (Kp * error) + (Kd * (error - lastError)); // plus since error is negative]
+      Lspeed = constrain(Lspeed, 0, MAXSPEED);
+      
+    }
+    else if (error > 0){      // robot has drifted L; slow down R wheel         
+      Rspeed = MAXSPEED - (Pk * error) - (Kd (error - lastError)); 
+      Rspeed = constrain(Rspeed, 0, MAXSPEED);
+      Lspeed = MAXSPEED;
+    }
+    else{                   // position is zero; full on both
+      Rspeed = MAXSPEED;
+      Lspeed = MAXSPEED;
+    }
 
+    fwd(Lspeed,Rspeed);
 
+  } // end if (goFlag)
 } // end loop()
+
 
 void halt(void)               // Stop
 {
   digitalWrite(Lmotor,LOW);   
   digitalWrite(Rmotor,LOW);      
 }   
-void fwd(byte a,byte b)       // Move forward
+
+
+void fwd(byte l,byte r)       // Move forward
 {
-  analogWrite (Lmotor,a);     // PWM Speed Control
+  analogWrite (Lmotor,l);     // PWM Speed Control
   digitalWrite(Ldir,LOW);     // LOW for fwd
-  analogWrite (Rmotor,b);    
+  analogWrite (Rmotor,r);    
   digitalWrite(Rdir,LOW);
 }  
 
-// don't need these functions for line follower
-//void rev(byte a,byte b)       // Reverse
+// don't need these functions for basic line follower
+//void rev(byte l,byte r)       // Reverse
 //{
-//  analogWrite (Lmotor,a);
+//  analogWrite (Lmotor,l);
 //  digitalWrite(Ldir,HIGH);   
-//  analogWrite (Rmotor,b);    
+//  analogWrite (Rmotor,r);    
 //  digitalWrite(Rdir,HIGH);
 //}  
-//void spinR(byte a, byte b)
+//void spinR(byte l, byte r)
 //{
-//  analogWrite (Lmotor,a);
+//  analogWrite (Lmotor,l);
 //  digitalWrite(Ldir,LOW);    // L fwd, R rev to spin R (clockwise)
-//  analogWrite (Rmotor,b);    
+//  analogWrite (Rmotor,r);    
 //  digitalWrite(Rdir,HIGH);
 //}  
-//void spinL(byte a, byte b)
+//void spinL(byte l, byte r)
 //{
-//  analogWrite (Lmotor,a);
+//  analogWrite (Lmotor,l);
 //  digitalWrite(Ldir,HIGH);    // R fwd, L rev to spin L (counterclockwise)
-//  analogWrite (Rmotor,b);    
+//  analogWrite (Rmotor,r);    
 //  digitalWrite(Rdir,LOW);
 //}  
