@@ -92,13 +92,19 @@ void loop() {
     halt();
     goFlag = false;
   }
-
-//  else if (buttonVal < 175){ // button 2 
-//    // for future use	
-//  }
-//  else if (buttonVal < 360){  // button 3 
-//    // for future use
-//  }
+  else if (buttonVal < 175){ // button 2 
+    //Default: the IR will only be turned on during reads.
+    //mySensorBar.setBarStrobe();
+    //Other option: Command to run all the time
+    mySensorBar.clearBarStrobe();
+  }
+  else if (buttonVal < 360){  // button 3 
+    //Default: the IR will only be turned on during reads.
+    mySensorBar.setBarStrobe();
+    //Other option: Command to run all the time
+    //mySensorBar.clearBarStrobe();
+  }
+  
 //  else if (buttonVal < 540){  // button 4
 //    // for future use
 //  }
