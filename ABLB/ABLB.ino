@@ -95,8 +95,9 @@ void loop() {
   else if (buttonVal < 175){ // button 2 
     //Default: the IR will only be turned on during reads.
     //mySensorBar.setBarStrobe();
-    //Other option: Command to run all the time
+    //Other option: Command to run all the time - allow calibration
     mySensorBar.clearBarStrobe();
+    int i = mySensorBar.getPosition();
   }
   else if (buttonVal < 360){  // button 3 
     //Default: the IR will only be turned on during reads.
