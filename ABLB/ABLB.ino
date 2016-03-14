@@ -93,24 +93,20 @@ void loop() {
     goFlag = false;
   }
   else if (buttonVal < 175){ // button 2 
-    //Default: the IR will only be turned on during reads.
-    //mySensorBar.setBarStrobe();
-    //Other option: Command to run all the time - allow calibration
+    //Command to run all the time - allow calibration
     mySensorBar.clearBarStrobe();
     int i = mySensorBar.getPosition();
   }
   else if (buttonVal < 360){  // button 3 
     //Default: the IR will only be turned on during reads.
     mySensorBar.setBarStrobe();
-    //Other option: Command to run all the time
-    //mySensorBar.clearBarStrobe();
   }
   
 //  else if (buttonVal < 540){  // button 4
 //    // for future use
 //  }
 
-  else if (buttonVal < 800){  // button 5
+  else if (buttonVal < 800){  // button 5 - run line follower program
     goFlag = true;
     delay(3000); //  3 sec delay to back off
     // include visual indicator later
@@ -123,7 +119,7 @@ void loop() {
     // rather than trying to speed up one and slow the other
     if (error < 0){           // robot has drifted right; slow down L wheel
       Rspeed = MAXSPEED;
-      Lspeed = MAXSPEED + (Kp * error) + (Kd * (error - lastError)); // plus since error is negative]
+      Lspeed = MAXSPEED + (Kp * error) + (Kd * (error - lastError)); // plus since error is negative, will result in negative values for proportionate term
       Lspeed = constrain(Lspeed, 0, MAXSPEED);
       
     }
