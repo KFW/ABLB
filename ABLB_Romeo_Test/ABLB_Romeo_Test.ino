@@ -2,8 +2,12 @@
  * ActoBitty Line Bot 
  * Initial test with DFRobot Romeo V2
  * http://www.dfrobot.com/wiki/index.php/Romeo_V2-All_in_one_Controller_(R3)_(SKU:DFR0225)
+ * 
+ * line follower array from Sparkfun:
+ * https://github.com/sparkfun/Line_Follower_Array
  *  
  */
+
 
 const int ButtonPin = 0;
 int buttonVal = 0;
@@ -13,7 +17,8 @@ int Lspeed = 5;    // M1 Speed Control
 int Rspeed = 6;    // M2 Speed Control
 int Ldir = 4;    // M1 Direction Control
 int Rdir = 7;    // M1 Direction Control
- 
+
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -59,7 +64,11 @@ void halt(void)               // Stop
 void fwd(byte a,byte b)       // Move forward
 {
   analogWrite (Lspeed,a);     // PWM Speed Control
+<<<<<<< HEAD
   digitalWrite(Ldir,LOW);    // HIGH for fwd
+=======
+  digitalWrite(Ldir,LOW);     // LOW for fwd
+>>>>>>> dev
   analogWrite (Rspeed,b);    
   digitalWrite(Rdir,LOW);
 }  
@@ -73,7 +82,11 @@ void rev(byte a,byte b)       // Reverse
 void spinR(byte a, byte b)
 {
   analogWrite (Lspeed,a);
+<<<<<<< HEAD
   digitalWrite(Ldir,LOW);    // L fwd, R rev to spin R (clockwise)
+=======
+  digitalWrite(Ldir,LOW);     // L fwd, R rev to spin R (clockwise)
+>>>>>>> dev
   analogWrite (Rspeed,b);    
   digitalWrite(Rdir,HIGH);
 }  
