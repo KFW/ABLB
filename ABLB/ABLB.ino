@@ -36,8 +36,8 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 // will try to avoid floating point math
-const byte Kp = 1;
-const byte Kd = 1;
+const byte Kp = 2;
+const byte Kd = 2;
 
 const byte MAXSPEED = 192; // slow things down for testing purposes
 int Lspeed = MAXSPEED;     // int since may exceed 255 in calculations, but will ultimately be constrained
