@@ -37,9 +37,9 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 
 // will try to avoid floating point math
 const byte Kp = 1;
-const byte Kd = 2;
+const byte Kd = 3;
 
-const byte MAXSPEED = 128; // slow things down for testing purposes
+const byte MAXSPEED = 192; // slow things down for testing purposes
 int Lspeed = MAXSPEED;     // int since may exceed 255 in calculations, but will ultimately be constrained
 int Rspeed = MAXSPEED;
 
