@@ -39,8 +39,8 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 const byte Kp = 1;
 const byte Kd = 2;
 
-const byte MAXSPEED = 192; // slow things down for testing purposes
-int Lspeed = MAXSPEED;     // int since may exceed 255 in calculations, but will ultimately be constrained
+const byte MAXSPEED = 255; // Max
+int Lspeed = MAXSPEED;     // int not byte since may exceed 255 in calculations, but will ultimately be constrained
 int Rspeed = MAXSPEED;
 
 
