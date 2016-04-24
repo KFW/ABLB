@@ -57,7 +57,12 @@ int Lmotor = 5;                // M1 Speed Control
 int Rmotor = 6;                // M2 Speed Control
 int Ldir = 4;                  // M1 Direction Control
 int Rdir = 7;                  // M1 Direction Control
- 
+
+// make it easier to change directions when changing motors
+const boolean LFWD = HIGH;
+const boolean LREV = LOW;
+const boolean RFWD = LOW;
+const boolean RREV = HIGH;
 
 void setup() {
  //Default: the IR will only be turned on during reads.
@@ -151,30 +156,30 @@ void halt(void)               // Stop
 void fwd(byte l,byte r)       // Move forward
 {
   analogWrite (Lmotor,l);     // PWM Speed Control
-  digitalWrite(Ldir,LOW);     // LOW for fwd
+  digitalWrite(Ldir,LFWD);     
   analogWrite (Rmotor,r);    
-  digitalWrite(Rdir,LOW);
+  digitalWrite(Rdir,RFWD);     
 }  
 
 // don't need these functions for basic line follower
 //void rev(byte l,byte r)       // Reverse
 //{
 //  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,HIGH);   
+//  digitalWrite(Ldir,LREV);   
 //  analogWrite (Rmotor,r);    
-//  digitalWrite(Rdir,HIGH);
+//  digitalWrite(Rdir,RREV);
 //}  
 //void spinR(byte l, byte r)
 //{
 //  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LOW);    // L fwd, R rev to spin R (clockwise)
+//  digitalWrite(Ldir,LFWD);    // L fwd, R rev to spin R (clockwise)
 //  analogWrite (Rmotor,r);    
-//  digitalWrite(Rdir,HIGH);
+//  digitalWrite(Rdir,RREV);
 //}  
 //void spinL(byte l, byte r)
 //{
 //  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,HIGH);    // R fwd, L rev to spin L (counterclockwise)
+//  digitalWrite(Ldir,LREV);    // R fwd, L rev to spin L (counterclockwise)
 //  analogWrite (Rmotor,r);    
-//  digitalWrite(Rdir,LOW);
+//  digitalWrite(Rdir,RFWD);
 //}  
