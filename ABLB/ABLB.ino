@@ -1,8 +1,6 @@
 /* ABLB
  * ActoBitty Line Bot 
  * 
- * DEV branch
- *
  * base robot Actobotics ActoBitty:
  * https://www.servocity.com/html/actobitty_2_wheel_robot_kit.html#.VthCuvkrI-U
  * 
@@ -36,7 +34,7 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 // will try to avoid floating point math
-const byte Kp = 1;
+const byte Kp = 2;
 const byte Kd = 4;
 
 const byte MAXSPEED = 255; // Max
@@ -98,17 +96,16 @@ void loop() {
   if (buttonVal < 30){       // button 1
     halt();
     goFlag = false;
+    mySensorBar.setBarStrobe(); // Default: IR will only turn on during reads - saves battery
   }
   else if (buttonVal < 175){ // button 2 
     //Command to run all the time - allow calibration
     mySensorBar.clearBarStrobe();
     int i = mySensorBar.getPosition();
   }
-  else if (buttonVal < 360){  // button 3 
-    //Default: the IR will only be turned on during reads.
-    mySensorBar.setBarStrobe();
-  }
-  
+//  else if (buttonVal < 360){  // button 3 
+//    // for future use
+//  }
 //  else if (buttonVal < 540){  // button 4
 //    // for future use
 //  }
