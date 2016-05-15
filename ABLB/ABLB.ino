@@ -4,6 +4,9 @@
  * base robot Actobotics ActoBitty:
  * https://www.servocity.com/html/actobitty_2_wheel_robot_kit.html#.VthCuvkrI-U
  * 
+ * added faster motors 270 rpm
+ * https://www.servocity.com/html/270_rpm_micro_gearmotorblocks.html#.VzjyE5MrIUE
+ * 
  * microcontroller board DFRobot Romeo 2 (has built in motor controller):
  * http://www.dfrobot.com/wiki/index.php/Romeo_V2-All_in_one_Controller_(R3)_(SKU:DFR0225) 
  *
@@ -35,11 +38,14 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 
 // will try to avoid floating point math
 const byte Kp = 7;
+const byte Ki = 0;
 const byte Kd = 16;
 
-const byte MAXSPEED = 128; // Max
-int Lspeed = MAXSPEED;     // int not byte since may exceed 255 in calculations, but will ultimately be constrained
-int Rspeed = MAXSPEED;
+
+const byte MAXSPEED = 255; 
+const byte RUNSPEED = 128; // half speed for init training of faster motors
+int Lspeed = RUNSPEED;     // int not byte since may exceed 255 in calculations, but will ultimately be constrained
+int Rspeed = RUNSPEED;
 
 
 
@@ -63,10 +69,10 @@ const boolean RFWD = LOW;
 const boolean RREV = HIGH;
 
 void setup() {
- //Default: the IR will only be turned on during reads.
-  mySensorBar.setBarStrobe();
-  //Other option: Command to run all the time
-  //mySensorBar.clearBarStrobe();
+  //Default: the IR will only be turned on during reads.
+  //mySensorBar.setBarStrobe();
+  //Other option: Command to run all the time; will try that for faster response at expense of worse battery
+  mySensorBar.clearBarStrobe();
 
   //Default: dark on light
   mySensorBar.clearInvertBits();
@@ -93,15 +99,13 @@ void loop() {
 
   buttonVal = analogRead(ButtonPin);
   
-  if (buttonVal < 30){       // button 1
+  if (buttonVal < 30){       // button 1 - use to pause if have to stop robot
     halt();
     goFlag = false;
     mySensorBar.setBarStrobe(); // Default: IR will only turn on during reads - saves battery
   }
   else if (buttonVal < 175){ // button 2 
-    //Command to run all the time - allow calibration
-    mySensorBar.clearBarStrobe();
-    int i = mySensorBar.getPosition();
+//    //for future use
   }
 //  else if (buttonVal < 360){  // button 3 
 //    // for future use
@@ -112,6 +116,7 @@ void loop() {
 
   else if (buttonVal < 800){  // button 5 - run line follower program
     goFlag = true;
+    mySensorBar.clearBarStrobe(); // run sensor all the time
     delay(3000); //  3 sec delay to back off
     // include visual indicator later
   }
