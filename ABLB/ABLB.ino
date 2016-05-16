@@ -37,9 +37,9 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 // I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 2;
+const float Kp = 7;
 const float Ki = 0;
-const float Kd = 0;
+const float Kd = 1;
 
 const byte MAXSPEED = 255;
 const byte RUNSPEED = 128; // half speed for init training of faster motors
