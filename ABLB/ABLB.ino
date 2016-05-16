@@ -125,11 +125,11 @@ void loop() {
     int D = (P - lastP);
     lastP = P;
 
-    correction = (P * Kp) + (I * Ki) + (D * Kd)
+    int correction = (P * Kp) + (I * Ki) + (D * Kd);
 
     // since not running full speed can speed up on side of error and slow down other side.
-    Lspeed = RUNSPEED - correction
-    Rspeed = RUNSPEED + correction
+    Lspeed = RUNSPEED - correction;
+    Rspeed = RUNSPEED + correction;
     Lspeed = constrain(Lspeed, 0, MAXSPEED);
     Rspeed = constrain(Rspeed, 0, MAXSPEED);
     fwd(Lspeed, Rspeed);
