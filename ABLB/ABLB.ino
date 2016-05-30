@@ -60,9 +60,9 @@ const boolean RREV = HIGH;
 
 void setup() {
   //Default: the IR will only be turned on during reads.
-  //mySensorBar.setBarStrobe();
+  mySensorBar.setBarStrobe();
   //Other option: Command to run all the time; will try that for faster response at expense of worse battery
-  mySensorBar.clearBarStrobe();
+  //mySensorBar.clearBarStrobe();
 
   //Default: dark on light
   mySensorBar.clearInvertBits();
@@ -97,7 +97,6 @@ void loop() {
   if (buttonVal < 30) {      // button 1 - use to pause if have to stop robot
     halt();
     goFlag = false;
-    mySensorBar.setBarStrobe(); // Default: IR will only turn on during reads - saves battery
   }
   else if (buttonVal < 175) { // button 2
     //    //for future use
@@ -111,7 +110,6 @@ void loop() {
 
   else if (buttonVal < 800) { // button 5 - run line follower program
     goFlag = true;
-    mySensorBar.clearBarStrobe(); // run sensor all the time
     delay(3000); //  3 sec delay to back off
     // include visual indicator later
   }
