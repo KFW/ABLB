@@ -37,9 +37,9 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 // I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 4;
+const float Kp = 9;
 const float Ki = 0;
-const float Kd = 0;
+const float Kd = 0.5;
 
 const byte MAXSPEED = 255;
 const byte RUNSPEED = 48; // slow speed
@@ -93,7 +93,7 @@ void loop() {
   static int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
   static int Rspeed = RUNSPEED;
   static boolean goFlag = false;
-  
+
   int buttonVal = analogRead(ButtonPin);
 
   if (buttonVal < 30) {      // button 1 - use to pause if have to stop robot; returns bar to on only during read
@@ -103,7 +103,7 @@ void loop() {
     mySensorBar.setBarStrobe();
   }
   else if (buttonVal < 175) { // button 2 - pause robot, but also allows calibration
-    
+
     halt();
     goFlag = false;
     // turn bar on for calibration
@@ -124,7 +124,7 @@ void loop() {
 
   static int I = 0;
   static int lastP = 0;
-  
+
   if (goFlag) {
     int P = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
     I = (I + P);
