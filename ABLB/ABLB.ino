@@ -37,12 +37,14 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 SensorBar mySensorBar(SX1509_ADDRESS);
 
 // I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 7;
+const float Kp = 4;
 const float Ki = 0;
-const float Kd = 1;
+const float Kd = 0;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 128; // half speed for init training of faster motors
+const byte RUNSPEED = 48; // slow speed
+
+const int TIMEDELAY = 1000; // time delay for backing off in ms
 
 const int ButtonPin = 0;
 
@@ -94,12 +96,18 @@ void loop() {
   
   int buttonVal = analogRead(ButtonPin);
 
-  if (buttonVal < 30) {      // button 1 - use to pause if have to stop robot
+  if (buttonVal < 30) {      // button 1 - use to pause if have to stop robot; returns bar to on only during read
     halt();
     goFlag = false;
+    // set bar to read only during read - can use to reset after button 2 pressed
+    mySensorBar.setBarStrobe();
   }
-  else if (buttonVal < 175) { // button 2
-    //    //for future use
+  else if (buttonVal < 175) { // button 2 - pause robot, but also allows calibration
+    
+    halt();
+    goFlag = false;
+    // turn bar on for calibration
+    mySensorBar.clearBarStrobe();
   }
   //  else if (buttonVal < 360){  // button 3
   //    // for future use
@@ -110,7 +118,7 @@ void loop() {
 
   else if (buttonVal < 800) { // button 5 - run line follower program
     goFlag = true;
-    delay(3000); //  3 sec delay to back off
+    delay(TIMEDELAY); //  time delay to back off
     // include visual indicator later
   }
 
@@ -126,8 +134,8 @@ void loop() {
     int correction = (P * Kp) + (I * Ki) + (D * Kd);
 
     // since not running full speed can speed up on side of error and slow down other side.
-    Lspeed = RUNSPEED - correction;
-    Rspeed = RUNSPEED + correction;
+    Lspeed = RUNSPEED + correction;
+    Rspeed = RUNSPEED - correction;
     Lspeed = constrain(Lspeed, 0, MAXSPEED);
     Rspeed = constrain(Rspeed, 0, MAXSPEED);
     fwd(Lspeed, Rspeed);
