@@ -39,12 +39,12 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 0.5;
+const float Kp = 1;
 const float Ki = 0;
 const float Kd = 1;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 127; // slow speed
+const byte RUNSPEED = 64; // slow speed
 
 const int TIMEDELAY = 1000; // time delay for backing off in ms
 
