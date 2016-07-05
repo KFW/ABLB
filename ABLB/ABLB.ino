@@ -18,6 +18,9 @@
    https://learn.sparkfun.com/tutorials/sparkfun-line-follower-array-hookup-guide
    position provided ranges from -127 (far L) to 127 (far R)
 
+   Note: values end up being discrete values (with # sensors in parentheses) if std electrical tape used for line: +/- 0, 31, 47, 63, 79, 95, 111, 127; 
+   Value then falles back to 0 (with 0 sensors detected) if too far off to the side
+
    PID quick tutorial
    http://letsmakerobots.com/node/39972
 
@@ -36,8 +39,8 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-// I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 7;
+
+const float Kp = 0.5;
 const float Ki = 0;
 const float Kd = 1;
 
