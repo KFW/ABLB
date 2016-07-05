@@ -39,21 +39,12 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-<<<<<<< HEAD
-
 const float Kp = 0.5;
-||||||| merged common ancestors
-// I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 7;
-=======
-// I know we should try to avoid floating point math, but probably will need fractional values for the constants
-const float Kp = 9;
->>>>>>> origin/dev2
 const float Ki = 0;
-const float Kd = 0.5;
+const float Kd = 1;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 48; // slow speed
+const byte RUNSPEED = 127; // slow speed
 
 const int TIMEDELAY = 1000; // time delay for backing off in ms
 
