@@ -1,5 +1,7 @@
 /* ABLB
-   ActoBitty Line Bot
+   ActoBitty Line Bot logic test
+   takes slow readings (once/second) and prints value to serial monitor to see if logic is working overall
+   don't need motors for this so they stay off
 
    base robot Actobotics ActoBitty:
    https://www.servocity.com/html/actobitty_2_wheel_robot_kit.html#.VthCuvkrI-U
@@ -18,7 +20,7 @@
    https://learn.sparkfun.com/tutorials/sparkfun-line-follower-array-hookup-guide
    position provided ranges from -127 (far L) to 127 (far R)
 
-   Note: values end up being discrete values (with # sensors in parentheses) if std electrical tape used for line: +/- 0, 31, 47, 63, 79, 95, 111, 127; 
+   Note: values end up being discrete values (with # sensors in parentheses) if std electrical tape used for line: +/- 0, 31, 47, 63, 79, 95, 111, 127;
    Value then falles back to 0 (with 0 sensors detected) if too far off to the side
 
    PID quick tutorial
@@ -46,23 +48,16 @@ const float Kd = 1;
 const byte MAXSPEED = 255;
 const byte RUNSPEED = 64; // slow speed
 
-const int TIMEDELAY = 1000; // time delay for putting robot down backing off, in ms
+const int TIMEDELAY = 1000; // time delay for putting robot down and backing off, in ms
 
 const int ButtonPin = 0;
 
-// Romeo standard pins
-int Lmotor = 5;                // M1 Speed Control
-int Rmotor = 6;                // M2 Speed Control
-int Ldir = 4;                  // M1 Direction Control
-int Rdir = 7;                  // M1 Direction Control
-
-// make it easier to change directions when changing motors
-const boolean LFWD = HIGH;
-const boolean LREV = LOW;
-const boolean RFWD = LOW;
-const boolean RREV = HIGH;
 
 void setup() {
+  Serial.begin(9600);  // start serial for output
+  Serial.println("Program started.");
+  Serial.println();
+  
   //Default: the IR will only be turned on during reads.
   mySensorBar.setBarStrobe();
   //Other option: Command to run all the time; will try that for faster response at expense of worse battery
@@ -75,24 +70,24 @@ void setup() {
 
   //Don't forget to call .begin() to get the bar ready.  This configures HW.
   uint8_t returnStatus = mySensorBar.begin();
-  /*
-    if(returnStatus)
-    {
-    Serial.println("sx1509 IC communication OK");
-    }
-    else
-    {
-    Serial.println("sx1509 IC communication FAILED!");
-    }
-    Serial.println();
-  */
+  
+  if(returnStatus)
+  {
+  Serial.println("sx1509 IC communication OK");
+  }
+  else
+  {
+  Serial.println("sx1509 IC communication FAILED!");
+  }
+  Serial.println();
+  
 
 } // end setup()
 
 
 void loop() {
 
-  static int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
+  static int Lspeed = RUNSPEED; // int, not byte, since may exceed 255 in calculations, but will ultimately be constrained
   static int Rspeed = RUNSPEED;
   static boolean goFlag = false;
 
@@ -120,7 +115,8 @@ void loop() {
 
   else if (buttonVal < 800) { // button 5 - run line follower program
     goFlag = true;
-    delay(TIMEDELAY); //  time delay to put robot down and back off
+    Serial.println("Go.\n");
+    delay(TIMEDELAY); //  time delay to back off
     // include visual indicator later
   }
 
@@ -128,58 +124,65 @@ void loop() {
   static int lastP = 0;
 
   if (goFlag) {
-    int P = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
+    //Get the data from the sensor bar and load it into the class members
+    uint8_t rawValue = mySensorBar.getRaw();
+    
+    //Print the binary value to the serial buffer.
+    Serial.print("Bin value of input: ");
+    for( int i = 7; i >= 0; i-- )
+    {
+      Serial.print((rawValue >> i) & 0x01);
+    }
+    Serial.println("b");
+  
+    //Print the hex value to the serial buffer.  
+    Serial.print("Hex value of bar: 0x");
+    if(rawValue < 0x10) //Serial.print( , HEX) doesn't pad zeros. Do it here
+    {
+      //Pad a 0;
+      Serial.print("0");
+    }
+    Serial.println(rawValue, HEX);
+    
+    //Print the position and density quantities
+    Serial.print("Position (-127 to 127): ");
+    int P = mySensorBar.getPosition();
+    Serial.println(P);
+    Serial.print("Density, bits detected (of 8): ");
+    Serial.println(mySensorBar.getDensity());
+      
     I = (I + P);
+    Serial.print("I: ");
+    Serial.println(I);
     int D = (P - lastP);
+    Serial.print("D: ");
+    Serial.println(D);
     lastP = P;
 
     int correction = (P * Kp) + (I * Ki) + (D * Kd);
+    Serial.print("Correction: ");
+    Serial.println(correction);
 
     // since not running full speed can speed up on side of error and slow down other side.
     Lspeed = RUNSPEED + correction;
     Rspeed = RUNSPEED - correction;
     Lspeed = constrain(Lspeed, 0, MAXSPEED);
     Rspeed = constrain(Rspeed, 0, MAXSPEED);
-    fwd(Lspeed, Rspeed);
+    Serial.print("Lspeed: ");
+    Serial.println(Lspeed);
+    Serial.print("Rspeed: ");
+    Serial.println(Rspeed);
+    Serial.println("\n");
 
   } // end if (goFlag)
+
+  delay(1000); // pause 1 second
+  
 } // end loop()
 
 
 void halt(void)               // Stop
 {
-  digitalWrite(Lmotor, LOW);
-  digitalWrite(Rmotor, LOW);
+  Serial.println("Halt.\n");
 }
 
-
-void fwd(byte l, byte r)      // Move forward
-{
-  analogWrite (Lmotor, l);    // PWM Speed Control
-  digitalWrite(Ldir, LFWD);
-  analogWrite (Rmotor, r);
-  digitalWrite(Rdir, RFWD);
-}
-
-// don't need these functions for basic line follower
-//void rev(byte l,byte r)       // Reverse
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LREV);
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RREV);
-//}
-//void spinR(byte l, byte r)
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LFWD);    // L fwd, R rev to spin R (clockwise)
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RREV);
-//}
-//void spinL(byte l, byte r)
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LREV);    // R fwd, L rev to spin L (counterclockwise)
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RFWD);
-//}
