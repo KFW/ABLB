@@ -18,7 +18,8 @@
    https://learn.sparkfun.com/tutorials/sparkfun-line-follower-array-hookup-guide
    position provided ranges from -127 (far L) to 127 (far R)
 
-   Note: values end up being discrete values (with # sensors in parentheses) if std electrical tape used for line: +/- 0, 31, 47, 63, 79, 95, 111, 127; 
+   Note: values end up being discrete values (with # sensors in parentheses) if std 
+   electrical tape used for line: +/- 0, 31, 47, 63, 79, 95, 111, 127; 
    Value then falles back to 0 (with 0 sensors detected) if too far off to the side
 
    PID quick tutorial
@@ -39,12 +40,12 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 1;
+const float Kp = 0.5;
 const float Ki = 0;
-const float Kd = 1;
+const float Kd = 0.5;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 64; // slow speed
+const byte RUNSPEED = 64; // slow speed for testing
 
 const int TIMEDELAY = 1000; // time delay for putting robot down backing off, in ms
 
@@ -65,7 +66,8 @@ const boolean RREV = HIGH;
 void setup() {
   //Default: the IR will only be turned on during reads.
   mySensorBar.setBarStrobe();
-  //Other option: Command to run all the time; will try that for faster response at expense of worse battery
+  //Other option: Command to run all the time; 
+  //might try that for faster response at expense of worse battery
   //mySensorBar.clearBarStrobe();
 
   //Default: dark on light
@@ -75,17 +77,6 @@ void setup() {
 
   //Don't forget to call .begin() to get the bar ready.  This configures HW.
   uint8_t returnStatus = mySensorBar.begin();
-  /*
-    if(returnStatus)
-    {
-    Serial.println("sx1509 IC communication OK");
-    }
-    else
-    {
-    Serial.println("sx1509 IC communication FAILED!");
-    }
-    Serial.println();
-  */
 
 } // end setup()
 
@@ -98,32 +89,32 @@ void loop() {
 
   int buttonVal = analogRead(ButtonPin);
 
-  if (buttonVal < 30) {      // button 1 - use to pause if have to stop robot; returns bar to on only during read
-    halt();
-    goFlag = false;
-    // set bar to read only during read - can use to reset after button 2 pressed
-    mySensorBar.setBarStrobe();
+  if (buttonVal < 30) {      // button 1 - run program
+    goFlag = true;
+    delay(TIMEDELAY); //  time delay to put robot down and back off
+    // include visual indicator later
   }
   else if (buttonVal < 175) { // button 2 - pause robot, but also allows calibration
-
     halt();
     goFlag = false;
     // turn bar on for calibration
     mySensorBar.clearBarStrobe();
   }
-  //  else if (buttonVal < 360){  // button 3
-  //    // for future use
-  //  }
-  //  else if (buttonVal < 540){  // button 4
-  //    // for future use
-  //  }
-
-  else if (buttonVal < 800) { // button 5 - run line follower program
-    goFlag = true;
-    delay(TIMEDELAY); //  time delay to put robot down and back off
-    // include visual indicator later
+//  else if (buttonVal < 360){  // button 3
+//    // for future use
+//  }
+//  else if (buttonVal < 540){  // button 4
+//    // for future use
+//  }
+// since button 3 and 4 don't have specific code attached
+// pressing 3, 4 or 5 pause robot
+  else if (buttonVal < 800){   // button 5
+    halt();
+    goFlag = false;
+    // set bar to read only during read - can use to reset after button 2 pressed
+    mySensorBar.setBarStrobe();
   }
-
+  
   static int I = 0;
   static int lastP = 0;
 
