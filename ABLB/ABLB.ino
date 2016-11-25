@@ -120,18 +120,25 @@ void loop() {
 
   if (goFlag) {
     int P = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
+    int density = mySensorBar.getDensity();
     I = (I + P);
     int D = (P - lastP);
     lastP = P;
 
     int correction = (P * Kp) + (I * Ki) + (D * Kd);
 
-    // since not running full speed can speed up on side of error and slow down other side.
-    Lspeed = RUNSPEED + correction;
-    Rspeed = RUNSPEED - correction;
-    Lspeed = constrain(Lspeed, 0, MAXSPEED);
-    Rspeed = constrain(Rspeed, 0, MAXSPEED);
-    fwd(Lspeed, Rspeed);
+    if (density > 0){   // line is being sensed
+      // since not running full speed can speed up on side of error and slow down other side.
+      Lspeed = RUNSPEED + correction;
+      Rspeed = RUNSPEED - correction;
+      Lspeed = constrain(Lspeed, 0, MAXSPEED);
+      Rspeed = constrain(Rspeed, 0, MAXSPEED);
+      fwd(Lspeed, Rspeed);
+    }
+    else{ // off the line; eventually may want to have more elaborate code to regain line
+      halt();
+      goFlag = false;     
+    }
 
   } // end if (goFlag)
 } // end loop()
