@@ -40,9 +40,9 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 2;
+const float Kp = 0.5;
 const float Ki = 0;
-const float Kd = 2.5;
+const float Kd = 0.5;
 
 const byte MAXSPEED = 255;
 const byte RUNSPEED = 32; // slow speed for testing
@@ -100,10 +100,10 @@ void loop() {
     // turn bar on for calibration
     mySensorBar.clearBarStrobe();
   }
-//  else if (buttonVal < 360){  // button 3
+//  else if (buttonVal < 360){  // button 3 - see button 5
 //    // for future use
 //  }
-//  else if (buttonVal < 540){  // button 4
+//  else if (buttonVal < 540){  // button 4 - see button 5
 //    // for future use
 //  }
 // since button 3 and 4 don't have specific code attached
