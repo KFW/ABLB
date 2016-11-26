@@ -40,12 +40,12 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 0.5;
-const float Ki = 0;
-const float Kd = 0.5;
+const float Kp = 1.2;
+const float Ki = 0.0;
+const float Kd = 2.1;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 32; // slow speed for testing
+const byte RUNSPEED = 64; // slow speed for testing
 
 const int TIMEDELAY = 1000; // time delay for putting robot down backing off, in ms
 
@@ -86,6 +86,8 @@ void loop() {
   static int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
   static int Rspeed = RUNSPEED;
   static boolean goFlag = false;
+  static int I = 0;
+  static int lastP = 0;
 
   int buttonVal = analogRead(ButtonPin);
 
@@ -115,8 +117,7 @@ void loop() {
     mySensorBar.setBarStrobe();
   }
   
-  static int I = 0;
-  static int lastP = 0;
+
 
   if (goFlag) {
     int P = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
