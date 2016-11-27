@@ -65,10 +65,10 @@ const boolean RREV = HIGH;
 
 void setup() {
   //Default: the IR will only be turned on during reads.
-  mySensorBar.setBarStrobe();
+  //mySensorBar.setBarStrobe();
   //Other option: Command to run all the time; 
-  //might try that for faster response at expense of worse battery
-  //mySensorBar.clearBarStrobe();
+  //try for faster response at expense of worse battery
+  mySensorBar.clearBarStrobe();
 
   //Default: dark on light
   mySensorBar.clearInvertBits();
@@ -96,12 +96,13 @@ void loop() {
     delay(TIMEDELAY); //  time delay to put robot down and back off
     // include visual indicator later
   }
-  else if (buttonVal < 175) { // button 2 - pause robot, but also allows calibration
-    halt();
-    goFlag = false;
-    // turn bar on for calibration
-    mySensorBar.clearBarStrobe();
-  }
+// for now any of the bottom row will halt robot  
+//  else if (buttonVal < 175) { //button 2 - pause robot, but also allows calibration
+//    halt();
+//    goFlag = false;
+//    // turn bar on for calibration
+//    mySensorBar.clearBarStrobe();
+//  }
 //  else if (buttonVal < 360){  // button 3 - see button 5
 //    // for future use
 //  }
