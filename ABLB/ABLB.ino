@@ -40,7 +40,7 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 1.2;
+const float Kp = 1.4;
 const float Ki = 0.0;
 const float Kd = 2.1;
 
@@ -88,6 +88,7 @@ void loop() {
   static boolean goFlag = false;
   static int I = 0;
   static int lastP = 0;
+  static boolean stillOffLine = false; // use for checking if persistently off the line since sometimes correction comes too late
 
   int buttonVal = analogRead(ButtonPin);
 
@@ -130,6 +131,7 @@ void loop() {
     int correction = (P * Kp) + (I * Ki) + (D * Kd);
 
     if (density > 0){   // line is being sensed
+      stillOffLine = false; // reset since line being sensed again
       // since not running full speed can speed up on side of error and slow down other side.
       Lspeed = RUNSPEED + correction;
       Rspeed = RUNSPEED - correction;
@@ -138,8 +140,13 @@ void loop() {
       fwd(Lspeed, Rspeed);
     }
     else{ // off the line; eventually may want to have more elaborate code to regain line
-      halt();
-      goFlag = false;     
+      if (stillOffLine){ // i.e. has already tested off the line once
+        halt();
+        goFlag = false;
+      }
+      else {
+        stillOffLine = true;  
+      }   
     }
 
   } // end if (goFlag)
