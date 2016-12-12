@@ -40,12 +40,12 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 0.5;
-const float Ki = 0;
-const float Kd = 0.5;
+const float Kp = 2.5;
+const float Ki = 0.0;
+const float Kd = 2.0;
 
 const byte MAXSPEED = 255;
-const byte RUNSPEED = 32; // slow speed for testing
+const byte RUNSPEED = 64; // slow speed for testing
 
 const int TIMEDELAY = 1000; // time delay for putting robot down backing off, in ms
 
@@ -65,10 +65,10 @@ const boolean RREV = HIGH;
 
 void setup() {
   //Default: the IR will only be turned on during reads.
-  mySensorBar.setBarStrobe();
+  //mySensorBar.setBarStrobe();
   //Other option: Command to run all the time; 
-  //might try that for faster response at expense of worse battery
-  //mySensorBar.clearBarStrobe();
+  //try for faster response at expense of worse battery
+  mySensorBar.clearBarStrobe();
 
   //Default: dark on light
   mySensorBar.clearInvertBits();
@@ -86,6 +86,9 @@ void loop() {
   static int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
   static int Rspeed = RUNSPEED;
   static boolean goFlag = false;
+  static int I = 0;
+  static int lastP = 0;
+  static boolean stillOffLine = false; // use for checking if persistently off the line since sometimes correction comes too late
 
   int buttonVal = analogRead(ButtonPin);
 
@@ -94,12 +97,13 @@ void loop() {
     delay(TIMEDELAY); //  time delay to put robot down and back off
     // include visual indicator later
   }
-  else if (buttonVal < 175) { // button 2 - pause robot, but also allows calibration
-    halt();
-    goFlag = false;
-    // turn bar on for calibration
-    mySensorBar.clearBarStrobe();
-  }
+// for now any of the bottom row will halt robot  
+//  else if (buttonVal < 175) { //button 2 - pause robot, but also allows calibration
+//    halt();
+//    goFlag = false;
+//    // turn bar on for calibration
+//    mySensorBar.clearBarStrobe();
+//  }
 //  else if (buttonVal < 360){  // button 3 - see button 5
 //    // for future use
 //  }
@@ -115,23 +119,35 @@ void loop() {
     mySensorBar.setBarStrobe();
   }
   
-  static int I = 0;
-  static int lastP = 0;
+
 
   if (goFlag) {
     int P = mySensorBar.getPosition(); // position gives distance from midline, i.e. the error
+    int density = mySensorBar.getDensity();
     I = (I + P);
     int D = (P - lastP);
     lastP = P;
 
     int correction = (P * Kp) + (I * Ki) + (D * Kd);
 
-    // since not running full speed can speed up on side of error and slow down other side.
-    Lspeed = RUNSPEED + correction;
-    Rspeed = RUNSPEED - correction;
-    Lspeed = constrain(Lspeed, 0, MAXSPEED);
-    Rspeed = constrain(Rspeed, 0, MAXSPEED);
-    fwd(Lspeed, Rspeed);
+    if (density > 0){   // line is being sensed
+      stillOffLine = false; // reset since line being sensed again
+      // since not running full speed can speed up on side of error and slow down other side.
+      Lspeed = RUNSPEED + correction;
+      Rspeed = RUNSPEED - correction;
+      Lspeed = constrain(Lspeed, 0, MAXSPEED);
+      Rspeed = constrain(Rspeed, 0, MAXSPEED);
+      fwd(Lspeed, Rspeed);
+    }
+    else{ // off the line; eventually may want to have more elaborate code to regain line
+      if (stillOffLine){ // i.e. has already tested off the line once
+        halt();
+        goFlag = false;
+      }
+      else {
+        stillOffLine = true;  
+      }   
+    }
 
   } // end if (goFlag)
 } // end loop()
