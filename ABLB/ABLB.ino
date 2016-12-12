@@ -40,9 +40,9 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 1.8;
-const float Ki = 0.0;
-const float Kd = 2.0;
+const float Kp = 1.1;
+const float Ki = 0.001;
+const float Kd = 3.1;
 
 const int MAXSPEED = 255;
 const int REVSPEED = -255; // max reverse speed
