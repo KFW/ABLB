@@ -40,12 +40,13 @@ const uint8_t SX1509_ADDRESS = 0x3E;  // SX1509 I2C address (00)
 
 SensorBar mySensorBar(SX1509_ADDRESS);
 
-const float Kp = 2.5;
+const float Kp = 1.8;
 const float Ki = 0.0;
 const float Kd = 2.0;
 
-const byte MAXSPEED = 255;
-const byte RUNSPEED = 64; // slow speed for testing
+const int MAXSPEED = 255;
+const int REVSPEED = -255; // max reverse speed
+const int RUNSPEED = 64; // slow speed for testing
 
 const int TIMEDELAY = 1000; // time delay for putting robot down backing off, in ms
 
@@ -135,9 +136,9 @@ void loop() {
       // since not running full speed can speed up on side of error and slow down other side.
       Lspeed = RUNSPEED + correction;
       Rspeed = RUNSPEED - correction;
-      Lspeed = constrain(Lspeed, 0, MAXSPEED);
-      Rspeed = constrain(Rspeed, 0, MAXSPEED);
-      fwd(Lspeed, Rspeed);
+      Lspeed = constrain(Lspeed, REVSPEED, MAXSPEED);
+      Rspeed = constrain(Rspeed, REVSPEED, MAXSPEED);
+      drive(Lspeed, Rspeed);
     }
     else{ // off the line; eventually may want to have more elaborate code to regain line
       if (stillOffLine){ // i.e. has already tested off the line once
@@ -160,33 +161,24 @@ void halt(void)               // Stop
 }
 
 
-void fwd(byte l, byte r)      // Move forward
-{
+void drive(int l, int r){      // general drive routine; negative speed indicates reverse
+  // set wheel direction
+  if (l<0){
+    digitalWrite(Ldir, LREV);
+    l = -l; // convert to positive value
+  }
+  else{
+    digitalWrite(Ldir, LFWD);
+  }
+  if (r<0){
+    digitalWrite(Rdir, RREV);
+    r = -r;
+  }
+  else{
+    digitalWrite(Rdir, RFWD);
+  }
+  // set wheel speed
   analogWrite (Lmotor, l);    // PWM Speed Control
-  digitalWrite(Ldir, LFWD);
   analogWrite (Rmotor, r);
-  digitalWrite(Rdir, RFWD);
 }
 
-// don't need these functions for basic line follower
-//void rev(byte l,byte r)       // Reverse
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LREV);
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RREV);
-//}
-//void spinR(byte l, byte r)
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LFWD);    // L fwd, R rev to spin R (clockwise)
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RREV);
-//}
-//void spinL(byte l, byte r)
-//{
-//  analogWrite (Lmotor,l);
-//  digitalWrite(Ldir,LREV);    // R fwd, L rev to spin L (counterclockwise)
-//  analogWrite (Rmotor,r);
-//  digitalWrite(Rdir,RFWD);
-//}
