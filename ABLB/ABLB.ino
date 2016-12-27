@@ -92,7 +92,7 @@ void loop() {
   static boolean goFlag = false;
   // static int I = 0; // not using
   static int lastP = 0;
-  static int correction = 0 ;
+
 
   
   int buttonVal = analogRead(ButtonPin);
@@ -140,7 +140,8 @@ void loop() {
     }
     else{ // off the line
       // use previous values since position will be reported as 0, which would mess up calculations
-      drive(Lspeed, Rspeed);      
+      // but slow down by half to ensure line captured
+      drive(Lspeed/2, Rspeed/2);      
         
     }
 
