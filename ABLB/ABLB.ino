@@ -64,6 +64,10 @@ const boolean LREV = LOW;
 const boolean RFWD = LOW;
 const boolean RREV = HIGH;
 
+// set as global to make it easier to use motor speeds 
+int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
+int Rspeed = RUNSPEED;
+
 void setup() {
   //Default: the IR will only be turned on during reads.
   //mySensorBar.setBarStrobe();
@@ -84,11 +88,12 @@ void setup() {
 
 void loop() {
 
-  static int Lspeed = RUNSPEED; // int not byte since may exceed 255 in calculations, but will ultimately be constrained
-  static int Rspeed = RUNSPEED;
+
   static boolean goFlag = false;
   // static int I = 0; // not using
   static int lastP = 0;
+  static int correction = 0 ;
+
   
   int buttonVal = analogRead(ButtonPin);
 
@@ -133,8 +138,9 @@ void loop() {
       Rspeed = constrain(Rspeed, REVSPEED, MAXSPEED);
       drive(Lspeed, Rspeed);
     }
-    else{ // off the line; base action on previous position
-      
+    else{ // off the line
+      // use previous values since position will be reported as 0, which would mess up calculations
+      drive(Lspeed, Rspeed);      
         
     }
 
