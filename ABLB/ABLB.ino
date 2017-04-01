@@ -7,7 +7,7 @@
    added faster motors 270 rpm
    https://www.servocity.com/html/270_rpm_micro_gearmotorblocks.html#.VzjyE5MrIUE
 
-   microcontroller board DFRobot Romeo 2 (has built in motor controller):
+   microcontroller board DFRobot Romeo 2 (has built in motor controller; use Leonardo as Arduino board targer)
    http://www.dfrobot.com/wiki/index.php/Romeo_V2-All_in_one_Controller_(R3)_(SKU:DFR0225)
 
    mount panel for board:
